@@ -1,0 +1,93 @@
+﻿@model Projeto_Final.Models.Cliente
+
+@{
+    Layout = null;
+    ViewBag.Title = "DetalheCliente";
+}
+
+@using (Html.BeginForm("DetalheCliente", "Clientes", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+{
+
+
+    <div class="center-column">
+        @if (String.IsNullOrEmpty(Model.Foto))
+        {
+            <img src="@Url.Content("~/fotos/Clientes/nofoto.png")" alt="foto" class="client-photo2" />
+        }
+        else
+        {
+            <img src="@Url.Content("~/fotos/Clientes/" + Model.Foto)" alt="foto" class="client-photo2" />
+        }
+        <div style="clear:both;"></div>
+    </div>
+
+    <div class="left-column">
+
+        <dl class="dl-horizontal">
+            <dt class="left-text">
+                Contribuinte
+            </dt>
+            <dd class="left-text">
+                @Html.DisplayFor(model => model.NUM_CC)
+            </dd>
+
+            <dt class="left-text">
+                Nome
+            </dt>
+            <dd class="left-text">
+                @Html.DisplayFor(model => model.NomeProprio)
+            </dd>
+
+            <dt class="left-text">
+                Apelido
+            </dt>
+            <dd class="left-text">
+                @Html.DisplayFor(model => model.NomeApelido)
+            </dd>
+
+            <dt class="left-text">
+                Email
+            </dt>
+            <dd class="left-text">
+                @Html.DisplayFor(model => model.Email)
+            </dd>
+
+            <dt class="left-text">
+                Contacto
+            </dt>
+            <dd class="left-text">
+                @Html.DisplayFor(model => model.Contacto)
+            </dd>
+
+            <dt class="left-text">
+                Nascimento
+            </dt>
+            <dd class="left-text">
+                @Html.DisplayFor(model => model.DataNascimento)
+            </dd>
+
+            <dt class="left-text">
+                Morada
+            </dt>
+            <dd class="left-text">
+                @Html.DisplayFor(model => model.Morada)
+            </dd>
+        </dl>
+    </div>
+}
+
+<style>
+
+    .center-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .client-photo2 {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 20px;
+    }
+</style>

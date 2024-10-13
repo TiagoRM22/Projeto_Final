@@ -1,0 +1,108 @@
+﻿@model MYEMAIL.Models.EmailFormModel
+@{
+    ViewBag.Title = "Contacto";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+
+<address>
+    Alameda das Linhas de Torres 179, 1750-142 Lisboa<br />
+    <abbr title="Phone">Contacto:</abbr>
+    969801457
+</address>
+
+<address>
+    <strong>Suporte:</strong>   <a href="mailto:suporte@pcrest.pt">suporte@pcrest.pt</a><br />
+    <strong>Reunião:</strong> <a href="mailto:reuniao@pcrest.pt">reuniao@pcrest.pt</a>
+</address>
+
+<button id="mostrarFormulario">Formulário</button>
+<p id="explicacaoBotao" style="display: block;">Clique no botão acima para preencher o formulário de contato.</p>
+
+<script>
+    document.getElementById("mostrarFormulario").addEventListener("click", function () {
+        var formularioContato = document.getElementById("formularioContato");
+        var explicacaoBotao = document.getElementById("explicacaoBotao");
+
+        if (formularioContato.style.display === "block") {
+            formularioContato.style.display = "none";
+            explicacaoBotao.style.display = "block";
+        } else {
+            formularioContato.style.display = "block";
+            explicacaoBotao.style.display = "none";
+        }
+    });
+</script>
+
+<div id="formularioContato" style="display: none;">
+    @using (Html.BeginForm("Contacto", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        <h4>Formulário de Contacto</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.Label("Enviar Para", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Para, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                @Html.ValidationMessageFor(model => model.Para, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Seu Nome", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DeNome, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DeNome, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Seu Email", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DeEmail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DeEmail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Contacto", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Telefone, new { htmlAttributes = new { @class = "form-control", type = "number" } })
+                @Html.ValidationMessageFor(model => model.Telefone, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Mensagem", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.Mensagem, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Mensagem, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Anexos", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="file" name="fich" id="fich" class="form-control" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Enviar" class="btn btn-default" />
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .formulario-item {
+        margin-bottom: 10px;
+    }
+
+    #nome {
+        margin-top: 10px;
+    }
+</style>

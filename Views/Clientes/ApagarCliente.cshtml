@@ -1,0 +1,88 @@
+﻿@model Projeto_Final.Models.Cliente
+
+@{
+    ViewBag.Title = "ApagarCliente";
+}
+
+<h2>Apagar Cliente</h2>
+
+<h3>Tem a certeza de que pretende eliminar este Cliente?</h3>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Contribuinte
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NUM_CC)
+        </dd>
+
+        <dt>
+            Nome
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NomeProprio)
+        </dd>
+
+        <dt>
+            Apelido
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NomeApelido)
+        </dd>
+
+        <dt>
+            Email
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            Contacto
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Contacto)
+        </dd>
+
+        <dt>
+            Data de Nascimento
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataNascimento)
+        </dd>
+
+        <dt>
+            Morada
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Morada)
+        </dd>
+
+        <dt>
+            Foto
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Foto)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            @Html.ActionLink("Voltar", "ListarClientes", new { page = ViewBag.pagina }, new { @class = "btn btn-primary" })
+            <input type="submit" value="Apagar" class="btn btn-default" />
+        </div>
+    }
+</div>

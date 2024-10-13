@@ -1,0 +1,509 @@
+﻿@model IEnumerable<Projeto_Final.Models.Cliente>
+
+@{
+    ViewBag.Title = "ListarClientes";
+}
+
+<link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+<h2>Lista dos Clientes</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <i id="criarNovoBtn" class="btn btn-primary" onclick="criarCliente()"><i class="fa fa-plus"></i> Cliente</i>
+        </div>
+        <div class="col-md-6 text-right">
+            <button class="btn btn-primary" onclick="imprimirClientesPDF()" style="background-color: #a0a0a0;"><i class="fa fa-print"></i> Imprimir PDF</button>
+            <button class="btn btn-primary" onclick="exportToExcel()" style="background-color: #3cb371;"><i class="fa fa-file-excel-o"></i> Exportar para Excel</button>
+        </div>
+    </div>
+</div>
+
+<p></p>
+
+<table id="tabela" class="table table-responsive table-bordered table-striped bg-cabeçalho">
+    <tr>
+        <th class="text-center">
+            NUM_CC
+        </th>
+        <th class="text-center">
+            NomeProprio
+        </th>
+        <th class="text-center">
+            NomeApelido
+        </th>
+        <th class="text-center">
+            Email
+        </th>
+        <th class="text-center">
+            Contacto
+        </th>
+        <th class="text-center">
+            Data de Nascimento
+        </th>
+        <th class="text-center">
+            Morada
+        </th>
+        <th class="text-center">
+            Foto
+        </th>
+        <th></th>
+    </tr>
+
+</table>
+
+
+<!-- Modal -->
+<div class="modal" id="mymodal1" tabindex="-1" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tit1">Criar cliente</h5>
+            </div>
+            <div class="modal-body" id="modalbody1">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submitForm1()">Criar</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="window.location.reload()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="mymodal2" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tit2">Editar cliente</h5>
+            </div>
+            <div class="modal-body" id="modalbody2">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submitForm2()">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="mymodal3" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tit3">Detalhe cliente</h5>
+            </div>
+            <div class="modal-body" id="modalbody3">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="mymodal4" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminação</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Tem a certeza de que pretende eliminar este cliente?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Apagar</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+
+    <!-- Imprimir -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+    <!-- Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+
+
+<script>
+        $(function () {
+            tab = $("#tabela").DataTable({
+                "language": {
+                    "lengthMenu": "Clientes por página: _MENU_",
+                    "search": "Procurar",
+                    "paginate": { "previous": "Anterior", "next": "Próximo" },
+                    "zeroRecords": "Nada foi encontrado",
+                    "info": "Página _PAGE_ de _PAGES_",
+                    "infoEmpty": "Sem registros",
+                    "infoFiltered": "(filtrado de _MAX_ regitros totais)"
+                },
+                "processing": true,
+                "filter": true,
+                "lengthMenu": [[3, 5, 10, 25, 50, -1], [3, 5, 10, 25, 50, "Todos"]],
+                "pageLength": 3,
+                "ajax": {
+                    "url": "/Clientes/GetClientes",
+                    "type": "GET",
+                    "dataType": "json"
+                },
+                "columns": [
+                    {
+                        "data": null, "title": "<input type='checkbox' id='selectAllHeader' />", "width": "10px", "className": "text-center", "orderable": false, "searchable": false, "render": function (data, type, row) {
+                            return '<input type="checkbox" class="selectedCliente" value="' + row.NUM_CC + '" />';
+                        }
+                    },
+                    { "data": "NUM_CC", "title": "Contribuinte", "autowidth": true, "className": "text-center" },
+                    {
+                        "data": "NomeProprio",
+                        "title": "Nome",
+                        "autowidth": true,
+                        "className": "text-center",
+                        "render": function (data, type, row) {
+                            return data ? data : '---';
+                        }
+                    },
+                    {
+                        "data": "NomeApelido",
+                        "title": "Apelido",
+                        "autowidth": true,
+                        "className": "text-center",
+                        "render": function (data, type, row) {
+                            return data ? data : '---';
+                        }
+                    },
+                    {
+                        "data": "Email",
+                        "title": "Email",
+                        "autowidth": true,
+                        "className": "text-center",
+                        "render": function (data, type, row) {
+                            return data ? data : '---';
+                        }
+                    },
+                    {
+                        "data": "Contacto",
+                        "title": "Contacto",
+                        "autowidth": true,
+                        "className": "text-center",
+                        "render": function (data, type, row) {
+                            return data ? data : '---';
+                        }
+                    },
+                    {
+                        "data": "DataNascimento",
+                        "title": "Nascimento",
+                        "autowidth": true, "className": "text-center",
+                        "render": function (data, type, row) {
+                            var date = new Date(parseInt(data.substr(6)));
+                            var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+                            return formattedDate;
+                        },
+                        "className": "text-center"
+                    },
+                    {
+                        "data": "Morada",
+                        "title": "Morada",
+                        "autowidth": true,
+                        "className": "text-center",
+                        "render": function (data, type, row) {
+                            return data ? data : '---';
+                        }
+                    },
+                    {
+                      "data": "Foto",
+                      "title": "Foto",
+                      "className": "text-center",
+                      "render": function (data, type, row) {
+                        if (data != null) {
+                            var imageSrc = '@Url.Content("~/fotos/Clientes/")' + data;
+                            return '<img src="' + imageSrc + '" alt="Photo" height="45px">';
+                        }
+                        return '<img src="@Url.Content("~/fotos/Clientes/nofoto.png")" height="45px" alt="foto"/>';
+                        }
+                    },
+                    {
+                        "data": "Botões",
+                        "title": "Botões",
+                        "autowidth": true,
+                        "width": "125px",
+                        "render": function (data, type, row) {
+                            var editarBtn = '<div style="display: inline-block;"><i class="btn btn-primary fa fa-edit" onclick="editarCliente(' + row.NUM_CC + ');" style="font-size:10pt" data-id="' + row.NUM_CC + '"></i></div>';
+                            var eliminarBtn = '<div style="display: inline-block;"><i class="btn btn-danger" onclick="eliminarCliente(event);" style="font-size:10pt;" data-id="' + row.NUM_CC + '"><i class="fa fa-trash"></i></i>';
+                            var detalhesBtn = '<div style="display: inline-block;"><i class="btn btn-info fa fa-search-plus" onclick="detalheCliente(' + row.NUM_CC + ');" style="font-size:10pt" data-id="' + row.NUM_CC + '"></i></div>';
+
+                            return editarBtn + eliminarBtn + detalhesBtn;
+                        }
+                    }
+                ]
+            });
+
+            // Selecionar/Desmarcar todos os Clientes
+            $('#selectAll').on('click', function () {
+                var allChecked = $(this).prop('checked');
+                $('.selectedCliente').prop('checked', allChecked);
+            });
+
+            $('#selectAllHeader').on('click', function () {
+                var allChecked = $(this).prop('checked');
+                $('.selectedCliente').prop('checked', allChecked);
+                tab.rows({ search: 'applied' }).nodes().to$().find('.selectedCliente').prop('checked', allChecked);
+            });
+
+        });
+
+
+
+
+        function criarCliente() {
+            var url = "/Clientes/CriarCliente/";
+            $("#modalbody1").load(url, function () {
+                $("#tit1").html("Criar Novo Cliente");
+                $("#mymodal1").modal("show");
+            });
+        }
+        function submitForm1() {
+            $("#frm").submit();
+        }
+
+
+        function editarCliente(id) {
+            var url = "/Clientes/EditarCliente/" + id;
+            $("#modalbody2").load(url, function () {
+                $("#tit2").html("Editar Cliente nº" + id);
+                $("#mymodal2").modal("show");
+            });
+        }
+        function submitForm2() {
+            $("#mymodal2 form").submit();
+        }
+
+
+        function eliminarCliente(evt) {
+            evt = evt ? evt : window.event;
+            evt.preventDefault();
+            var id = $(evt.target).data("id");
+            $('#mymodal4').modal('show');
+
+            $('#confirmDeleteBtn').off().on('click', function () {
+                $('#mymodal4').modal('hide');
+                $.ajax({
+                    url: "/Clientes/EliminaCliente",
+                    type: "POST",
+                    dataType: "json",
+                    data: { id: id },
+                    success: function (dados) {
+                        tab.row($(evt.target).closest("tr")).remove().draw(false);
+                        showAlert("Produto eliminado com sucesso!", "success");
+                    },
+                    error: function (erro) {
+                        console.log(erro);
+                        showAlert("Ocorreu um erro ao eliminar o produto.", "error");
+                    }
+                });
+            });
+        }
+        function showAlert(message, type) {
+            var alertClass = type === "success" ? "alert-success" : "alert-danger";
+            var alertHTML = '<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' +
+                message +
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                '<span aria-hidden="true">&times;</span>' +
+                '</button>' +
+                '</div>';
+            $('#messageContainer').html(alertHTML);
+        }
+
+
+        function detalheCliente(id) {
+            var url = "/Clientes/DetalheCliente/" + id;
+            $("#modalbody3").load(url, function () {
+                $("#tit3").html("Detalhe do Cliente nº" + id);
+                $("#mymodal3").modal("show");
+            });
+        }
+
+
+        function arrayBufferToBase64(buffer)
+        {
+            var binary = '';
+            var bytes = new Uint8Array(buffer);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+
+
+
+
+    // Botões Header
+    function imprimirClientesPDF() {
+      var selectedData = [];
+
+      tab.rows().every(function () {
+          var rowData = this.data();
+          var rowNode = this.node();
+          var checkbox = $(rowNode).find('.selectedCliente');
+
+          if (checkbox.prop('checked')) {
+              selectedData.push(rowData);
+          }
+      });
+
+      if (selectedData.length === 0) {
+          alert("Selecione pelo menos um cliente para imprimir.");
+          return;
+      }
+
+      var docDefinition = {
+          content: [],
+          pageOrientation: "landscape",
+          styles: {
+              header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10], alignment: "center" },
+              subheader: { fontSize: 14, bold: true, margin: [0, 0, 0, 5], alignment: "center" },
+              description: { margin: [0, 5, 0, 15], fontSize: 10 },
+              photo: { margin: [0, 5, 0, 15] },
+              price: { margin: [0, 5, 0, 15], fontSize: 12, bold: true },
+              table: { margin: [0, 5, 0, 15] },
+              leftColumn: { width: "40%" },
+              rightColumn: { width: "60%" }
+          },
+      };
+
+      selectedData.forEach(function (cliente, index) {
+      var preco = cliente.Preço !== null ? cliente.Preço + " €" : "";
+
+      var image = null;
+      if (cliente.Foto != null) {
+          var imageSrc = '@Url.Content("~/fotos/Clientes/")' + cliente.Foto;
+          var base64Image = getImageAsBase64(imageSrc);
+          image = { image: base64Image, width: 200, height: 250 };
+      }
+
+      var leftColumnContent = image;
+      var rightColumnContent = [
+          { text: "Email: " + cliente.Email, style: "description" },
+          { text: "Contacto: " + cliente.Contacto, style: "description" },
+          { text: "Nascimento: " + moment(cliente.DataNascimento).format('DD/MM/YYYY'), style: "description" },
+          { text: "Morada: " + cliente.Morada, style: "description" },
+      ];
+
+          docDefinition.content.push(
+              { text: "Contribuinte: " + cliente.NUM_CC, style: "header", alignment: "center" },
+              { text: "Nome: " + cliente.NomeProprio + " " + cliente.NomeApelido, style: "subheader", alignment: "center" },
+              { text: "", margin: [0, 20] },
+              {
+                  columns: [
+                      { width: "50%", stack: [leftColumnContent], style: "leftColumn" },
+                      { width: "50%", stack: rightColumnContent, style: "rightColumn" }
+                  ],
+                  columnGap: 10,
+                  alignment: "center"
+              }
+          );
+
+          // Quebra de página
+          if (index < selectedData.length - 1) {
+              docDefinition.content.push({ text: "", pageBreak: "after" });
+          }
+      });
+
+      pdfMake.createPdf(docDefinition).open();
+    }
+    function getImageAsBase64(url) {
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+        var img = new Image();
+        img.src = url;
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+        return canvas.toDataURL();
+    }
+
+
+
+    function exportToExcel() {
+      var selectedData = [];
+
+      tab.rows().every(function () {
+        var rowData = this.data();
+        var rowNode = this.node();
+        var checkbox = $(rowNode).find('.selectedCliente');
+
+        if (checkbox.prop('checked')) {
+          delete rowData.Foto;
+          selectedData.push(rowData);
+        }
+      });
+
+      if (selectedData.length === 0) {
+        alert("Selecione pelo menos um cliente para exportar.");
+        return;
+      }
+
+      selectedData.forEach(function (data) {
+      
+        var dataNascimentoMillis = parseInt(data.DataNascimento.replace("/Date(", "").replace(")/", ""), 10);
+        var dataNascimentoDate = new Date(dataNascimentoMillis);
+        var dia = dataNascimentoDate.getDate().toString().padStart(2, '0');
+        var mes = (dataNascimentoDate.getMonth() + 1).toString().padStart(2, '0');
+        var ano = dataNascimentoDate.getFullYear();
+
+        data.DataNascimento = dia + '/' + mes + '/' + ano;
+      });
+
+      var wb = XLSX.utils.book_new();
+      var ws = XLSX.utils.json_to_sheet(selectedData);
+
+      var headerStyle = { font: { bold: true }, fill: { patternType: "solid", fgColor: { rgb: "FFFF00" } } };
+      var cellStyle = { fill: { patternType: "solid", fgColor: { rgb: "FFFFFF" } } };
+      var tableStyle = { showGridLines: false };
+
+      var headerRange = XLSX.utils.decode_range(ws["!ref"]);
+      for (var i = headerRange.s.c; i <= headerRange.e.c; i++) {
+        var cellAddress = XLSX.utils.encode_cell({ r: headerRange.s.r, c: i });
+        ws[cellAddress].s = headerStyle;
+      }
+
+      var dataRange = XLSX.utils.decode_range(ws["!ref"]);
+      for (var row = dataRange.s.r + 1; row <= dataRange.e.r; row++) {
+        for (var col = dataRange.s.c; col <= dataRange.e.c; col++) {
+          var cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+          ws[cellAddress].s = cellStyle;
+        }
+      }
+
+      XLSX.utils.book_append_sheet(wb, ws, "Clientes Selecionados");
+
+      wb.Workbook = { Views: [{ ShowGridLines: 0 }] };
+      var sheet = wb.Sheets["Clientes Selecionados"];
+      sheet["!autofilter"] = { ref: ws["!ref"] };
+      sheet["!cols"] = [{ width: 15 }, { width: 20 }, { width: 25 }];
+
+      var wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      saveAs(new Blob([wbout], { type: "application/octet-stream" }), "clientes.xlsx");
+    }
+
+</script>
+
+}
+
+<style>
+    .bg-cabeçalho {
+        background-color: #dcb252;
+    }
+</style>

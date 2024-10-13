@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .jumbotron {
+            background-color: #f8f9fa;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin: 80px 0 2rem 0; /* Adicionado margin-top de 80px */
+        }
+
+            .jumbotron h1 {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                color: #007bff;
+            }
+
+            .jumbotron p.lead {
+                font-size: 1.25rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .jumbotron .btn {
+                font-size: 1.25rem;
+                padding: 0.75rem 1.5rem;
+            }
+
+        .center-content {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem 1rem;
+            background-color: #f1f1f1;
+        }
+
+        .col-md-4 {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 320px;
+            text-align: center;
+        }
+
+            .col-md-4 h2 {
+                font-size: 1.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .col-md-4 p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .col-md-4 .btn {
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+            }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #ffffff;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #004085;
+            }
+
+        .btn-default {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: #ffffff;
+        }
+
+            .btn-default:hover {
+                background-color: #ffffff;
+                border-color: #4e555b;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="jumbotron">
+        <h1>StockConnect</h1>
+        <p class="lead">A nossa missão é a satisfação dos nossos clientes</p>
+        <p><a href="https://admircastro.pcrest.pt/" class="btn btn-primary btn-lg" target="_blank" onclick="abrirNovaPagina()">Ir para a sua Loja &raquo;</a></p>
+    </div>
+
+    <div class="row center-content">
+
+        @if (User.IsInRole("Produtos") || User.IsInRole("Administrador"))
+        {
+            <div class="col-md-4">
+                <h2>Gestão de Produtos</h2>
+                <p>
+                    Transforme a forma como a sua empresa opera! A gestão de produtos é essencial para otimizar processos, reduzir custos e satisfazer as exigências dos seus clientes. Clique aqui e descubra como podemos ajudar a alcançar o sucesso que procura!
+                </p>
+                <p><a class="btn btn-default" href="/Produtos/ListarProdutos">Gestão de Produtos &raquo;</a></p>
+            </div>
+        }
+
+        @if (User.IsInRole("Clientes") || User.IsInRole("Administrador"))
+        {
+            <div class="col-md-4">
+                <h2>Gestão de Clientes</h2>
+                <p>Potencie o crescimento e a fidelização da sua empresa! A gestão de clientes é crucial para entender, atender e satisfazer as necessidades dos seus clientes. Clique aqui para descobrir como fortalecer o relacionamento com os seus clientes e aumentar a sua satisfação e lealdade.</p>
+                <p><a class="btn btn-default" href="/Clientes/ListarClientes">Consultar clientes &raquo;</a></p>
+            </div>
+        }
+    </div>
+
+</body>
+</html>
